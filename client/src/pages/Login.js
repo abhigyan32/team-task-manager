@@ -9,38 +9,50 @@ function Login() {
     useState("");
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const res = await API.post(
-        "/auth/login",
-        {
-          email,
-          password,
-        }
-      );
+  try {
+    const res = await API.post(
+      "/auth/login",
+      {
+        email,
+        password,
+      }
+    );
 
-      localStorage.setItem(
-        "token",
-        res.data.token
-      );
+    if (
+      !res.data ||
+      !res.data.user ||
+      !res.data.token
+    ) {
+      alert("Invalid login");
 
-      localStorage.setItem(
-        "user",
-        JSON.stringify(res.data.user)
-      );
-
-      window.location.href =
-        "/dashboard";
-    } catch (error) {
-      console.log(error);
-
-      alert(
-        error?.response?.data?.message ||
-        "Login Failed"
-      );
+      return;
     }
-  };
+
+    localStorage.setItem(
+      "token",
+      res.data.token
+    );
+
+    localStorage.setItem(
+      "user",
+      JSON.stringify(
+        res.data.user
+      )
+    );
+
+    window.location.href =
+      "/dashboard";
+  } catch (error) {
+    console.log(error);
+
+    alert(
+      error?.response?.data?.message ||
+      "Login Failed"
+    );
+  }
+};
 
   return (
     <div
