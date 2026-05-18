@@ -62,6 +62,8 @@ router.post(
       const { email, password } =
         req.body;
 
+      console.log(email);
+
       const user =
         await User.findOne({
           email,
@@ -69,7 +71,8 @@ router.post(
 
       if (!user) {
         return res.status(400).json({
-          message: "Invalid email",
+          message:
+            "User not found",
         });
       }
 
@@ -89,7 +92,6 @@ router.post(
       const token = jwt.sign(
         {
           id: user._id,
-          role: user.role,
         },
         process.env.JWT_SECRET,
         {
@@ -110,7 +112,8 @@ router.post(
       console.log(error);
 
       res.status(500).json({
-        message: error.message,
+        message:
+          "Server Error",
       });
     }
   }
