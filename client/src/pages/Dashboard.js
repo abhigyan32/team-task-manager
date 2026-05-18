@@ -20,9 +20,12 @@ function Dashboard() {
   const [dueDate, setDueDate] =
     useState("");
 
-  const user = JSON.parse(
-  localStorage.getItem("user")
-  );
+  const userData =
+    localStorage.getItem("user");
+
+  const user = userData
+    ? JSON.parse(userData)
+    : null;
 
   useEffect(() => {
     fetchTasks();
