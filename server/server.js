@@ -14,9 +14,7 @@ const taskRoutes = require(
   "./routes/taskRoutes"
 );
 
-const projectRoutes = require(
-  "./routes/projectRoutes"
-);
+
 
 const app = express();
 
@@ -28,7 +26,7 @@ app.use("/api/auth", authRoutes);
 
 app.use("/api/tasks", taskRoutes);
 
-app.use("/api/projects", projectRoutes);
+
 
 mongoose
   .connect(process.env.MONGO_URI)
