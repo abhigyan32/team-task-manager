@@ -1,12 +1,7 @@
 import { useState } from "react";
-
-import { useNavigate } from "react-router-dom";
-
 import API from "../services/api";
 
 function Login() {
-  const navigate = useNavigate();
-
   const [email, setEmail] =
     useState("");
 
@@ -14,62 +9,62 @@ function Login() {
     useState("");
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    console.log("EMAIL:", email);
+    console.log(email);
+console.log(password);
 
-    console.log(
-      "PASSWORD:",
-      password
+  try {
+    const res = await API.post(
+      "/auth/login",
+      {
+        email,
+        password,
+      }
+    );
+    console.log(res.data);
+
+    if (
+      !res.data ||
+      !res.data.user ||
+      !res.data.token
+    ) {
+      alert("Invalid login");
+
+      return;
+    }
+
+    localStorage.setItem(
+      "token",
+      res.data.token
     );
 
-    try {
-      const res = await API.post(
-        "/auth/login",
-        {
-          email,
-          password,
-        }
-      );
+    localStorage.setItem(
+      "user",
+      JSON.stringify(
+        res.data.user
+      )
+    );
 
-      console.log(
-        "LOGIN RESPONSE:",
-        res.data
-      );
+    window.location.href =
+      "/dashboard";
+  } catch (error) {
+    console.log(error);
 
-      localStorage.setItem(
-        "token",
-        res.data.token
-      );
-
-      localStorage.setItem(
-        "user",
-        JSON.stringify(
-          res.data.user
-        )
-      );
-
-      alert("Login Successful");
-
-      navigate("/dashboard");
-    } catch (error) {
-      console.log(
-        "LOGIN ERROR:",
-        error
-      );
-
-      alert(
-        error?.response?.data
-          ?.message || "Login Failed"
-      );
-    }
-  };
+    alert(
+      error?.response?.data?.message ||
+      "Login Failed"
+    );
+  }
+};
 
   return (
     <div
-      className="container d-flex justify-content-center align-items-center"
+      className="d-flex justify-content-center align-items-center"
       style={{
-        minHeight: "100vh",
+        height: "100vh",
+        background:
+          "linear-gradient(to right, #4facfe, #00f2fe)",
       }}
     >
       <div
@@ -83,42 +78,28 @@ function Login() {
           Team Task Manager
         </h2>
 
-        <form
-          onSubmit={handleLogin}
-        >
+        <form onSubmit={handleLogin}>
           <div className="mb-3">
-            <label className="form-label fw-bold">
-              Email
-            </label>
-
             <input
               type="email"
+              placeholder="Enter Email"
               className="form-control"
-              placeholder="Enter email"
               value={email}
               onChange={(e) =>
-                setEmail(
-                  e.target.value
-                )
+                setEmail(e.target.value)
               }
               required
             />
           </div>
 
           <div className="mb-3">
-            <label className="form-label fw-bold">
-              Password
-            </label>
-
             <input
               type="password"
+              placeholder="Enter Password"
               className="form-control"
-              placeholder="Enter password"
               value={password}
               onChange={(e) =>
-                setPassword(
-                  e.target.value
-                )
+                setPassword(e.target.value)
               }
               required
             />
@@ -129,6 +110,17 @@ function Login() {
             className="btn btn-primary w-100"
           >
             Login
+          </button>
+
+          <button
+            type="button"
+            className="btn btn-outline-dark w-100 mt-3"
+            onClick={() =>
+              (window.location.href =
+                "/register")
+            }
+          >
+            Create Account
           </button>
         </form>
       </div>
