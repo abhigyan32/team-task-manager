@@ -31,25 +31,34 @@ router.post(
         });
       }
 
-      const hashedPassword =
-        await bcrypt.hash(password, 10);
+      const salt =
+        await bcrypt.genSalt(10);
 
-      const user = await User.create({
-        name,
-        email,
-        password: hashedPassword,
-        role,
-      });
+      const hashedPassword =
+        await bcrypt.hash(
+          password,
+          salt
+        );
+
+      const user =
+        await User.create({
+          name,
+          email,
+          password:
+            hashedPassword,
+          role,
+        });
 
       res.status(201).json({
         message:
-          "User registered successfully",
+          "Registration successful",
       });
     } catch (error) {
       console.log(error);
 
       res.status(500).json({
-        message: error.message,
+        message:
+          "Server Error",
       });
     }
   }
@@ -62,8 +71,6 @@ router.post(
       const { email, password } =
         req.body;
 
-      console.log(email);
-
       const user =
         await User.findOne({
           email,
@@ -72,7 +79,7 @@ router.post(
       if (!user) {
         return res.status(400).json({
           message:
-            "User not found",
+            "Invalid credentials",
         });
       }
 
@@ -85,13 +92,14 @@ router.post(
       if (!isMatch) {
         return res.status(400).json({
           message:
-            "Invalid password",
+            "Invalid credentials",
         });
       }
 
       const token = jwt.sign(
         {
           id: user._id,
+          role: user.role,
         },
         process.env.JWT_SECRET,
         {
