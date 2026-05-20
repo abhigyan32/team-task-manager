@@ -2,8 +2,6 @@ const express = require("express");
 
 const router = express.Router();
 
-const bcrypt = require("bcryptjs");
-
 const jwt = require("jsonwebtoken");
 
 const User = require("../models/User");
@@ -19,12 +17,12 @@ router.post(
         role,
       } = req.body;
 
-      const userExists =
+      const existingUser =
         await User.findOne({
           email,
         });
 
-      if (userExists) {
+      if (existingUser) {
         return res.status(400).json({
           message:
             "User already exists",
@@ -35,8 +33,7 @@ router.post(
         await User.create({
           name,
           email,
-          password:
-            password,
+          password,
           role,
         });
 
@@ -70,21 +67,23 @@ router.post(
       if (!user) {
         return res.status(400).json({
           message:
-            "Invalid credentials",
+            "User not found",
         });
       }
 
-      if (password !== user.password) {
+      if (
+        user.password !==
+        password
+      ) {
         return res.status(400).json({
           message:
-            "Invalid credentials",
+            "Invalid password",
         });
       }
 
       const token = jwt.sign(
         {
           id: user._id,
-          role: user.role,
         },
         process.env.JWT_SECRET,
         {
@@ -126,7 +125,8 @@ router.get(
       console.log(error);
 
       res.status(500).json({
-        message: error.message,
+        message:
+          "Server Error",
       });
     }
   }
