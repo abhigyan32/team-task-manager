@@ -29,13 +29,12 @@ router.post(
         });
       }
 
-      const user =
-        await User.create({
-          name,
-          email,
-          password,
-          role,
-        });
+      await User.create({
+        name,
+        email,
+        password,
+        role,
+      });
 
       res.status(201).json({
         message:
@@ -93,12 +92,7 @@ router.post(
 
       res.json({
         token,
-        user: {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        },
+        user,
       });
     } catch (error) {
       console.log(error);
@@ -116,9 +110,7 @@ router.get(
   async (req, res) => {
     try {
       const users =
-        await User.find().select(
-          "name email role"
-        );
+        await User.find();
 
       res.json(users);
     } catch (error) {
